@@ -1,0 +1,7 @@
+name: OpenCode PR Review
+on:
+  pull_request:
+    types: [opened, synchronize]
+jobs:
+  review:
+    uses: nebarilabs/.github/.github/workflows/opencode-review.yml@v1
