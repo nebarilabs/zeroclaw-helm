@@ -1,0 +1,10 @@
+name: OpenCode Issue Analysis
+on:
+  issue_comment:
+    types: [created]
+jobs:
+  analyze:
+    if: contains(github.event.comment.body, '/opencode')
+    uses: nebarilabs/.github/.github/workflows/opencode-issue.yml@v1
+    with:
+      issue-number: ${{ github.event.issue.number }}
