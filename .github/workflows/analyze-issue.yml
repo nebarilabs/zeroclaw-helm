@@ -5,6 +5,6 @@ on:
 jobs:
   analyze:
     if: contains(github.event.comment.body, '/opencode')
-    uses: nebarilabs/.github/.github/workflows/opencode-issue.yml@v1
+    uses: nebarilabs/.github/.github/workflows/opencode-issue.yml@v2
     with:
       issue-number: ${{ github.event.issue.number }}
