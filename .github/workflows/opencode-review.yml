@@ -7,4 +7,4 @@ permissions:
   contents: read
 jobs:
   review:
-    uses: nebarilabs/.github/.github/workflows/opencode-review.yml@v1
+    uses: nebarilabs/.github/.github/workflows/opencode-review.yml@v2
