@@ -39,7 +39,7 @@ spec:
           args:
             - |
               set -e
-              mkdir -p /zeroclaw-data/.zeroclaw /zeroclaw-data/workspace
+              mkdir -p /zeroclaw-data/.zeroclaw /zeroclaw-data/data
               cp /config/config.toml /zeroclaw-data/.zeroclaw/config.toml
               {{- if include "zeroclaw.hasChannelSecrets" . }}
               CONFIG="/zeroclaw-data/.zeroclaw/config.toml"
