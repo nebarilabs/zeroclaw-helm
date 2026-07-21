@@ -902,6 +902,11 @@
                   "type": "string",
                   "default": "",
                   "description": "Ollama-compatible API endpoint URI (e.g. 'http://ollama.ollama.svc:11434/v1')."
+                },
+                "model": {
+                  "type": "string",
+                  "default": "",
+                  "description": "Default model for this provider (e.g. 'llama3', 'mistral'). Required for channel supervisor."
                 }
               },
               "additionalProperties": false
