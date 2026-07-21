@@ -113,3 +113,39 @@ Output: ["git", "npm", "cargo"]
 {{- define "zeroclaw.tomlStringList" -}}
 [{{ range $i, $v := . }}{{ if $i }}, {{ end }}{{ $v | quote }}{{ end }}]
 {{- end -}}
+
+{{/*
+Build list of enabled channel aliases for agent binding.
+Output: ["discord.default"] or ["telegram.default", "discord.default"]
+*/}}
+{{- define "zeroclaw.enabledChannels" -}}
+{{- $channels := list -}}
+{{- if .Values.config.channels.telegram.enabled -}}
+{{- $channels = append $channels "telegram.default" -}}
+{{- end -}}
+{{- if .Values.config.channels.discord.enabled -}}
+{{- $channels = append $channels "discord.default" -}}
+{{- end -}}
+{{- if .Values.config.channels.slack.enabled -}}
+{{- $channels = append $channels "slack.default" -}}
+{{- end -}}
+{{- if .Values.config.channels.whatsapp.enabled -}}
+{{- $channels = append $channels "whatsapp.default" -}}
+{{- end -}}
+{{- if .Values.config.channels.matrix.enabled -}}
+{{- $channels = append $channels "matrix.default" -}}
+{{- end -}}
+{{- if .Values.config.channels.imessage.enabled -}}
+{{- $channels = append $channels "imessage.default" -}}
+{{- end -}}
+{{- if .Values.config.channels.irc.enabled -}}
+{{- $channels = append $channels "irc.default" -}}
+{{- end -}}
+{{- if .Values.config.channels.lark.enabled -}}
+{{- $channels = append $channels "lark.default" -}}
+{{- end -}}
+{{- if .Values.config.channels.dingtalk.enabled -}}
+{{- $channels = append $channels "dingtalk.default" -}}
+{{- end -}}
+{{ include "zeroclaw.tomlStringList" $channels -}}
+{{- end -}}

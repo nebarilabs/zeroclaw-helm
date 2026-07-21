@@ -170,6 +170,7 @@ config:
     maxCostPerDayCents: 500
     requireApprovalForMediumRisk: true
     blockHighRiskCommands: true
+    autoApprove: []
 
   # ── Runtime ─────────────────────────────────────────────────
   runtime:
