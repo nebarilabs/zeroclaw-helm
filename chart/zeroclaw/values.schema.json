@@ -1672,6 +1672,34 @@
       },
       "default": [],
       "description": "Arbitrary extra Kubernetes manifests to deploy alongside the chart."
+    },
+    "peerGroups": {
+      "type": "object",
+      "default": {},
+      "description": "V3 peer groups for inbound sender gating. Keys are group names; each value has channel, agents, and externalPeers fields.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "type": "string",
+            "description": "Channel alias this group applies to (e.g. 'discord.default')."
+          },
+          "agents": {
+            "type": "array",
+            "items": { "type": "string" },
+            "default": [],
+            "description": "Agent aliases that are members of this peer group."
+          },
+          "externalPeers": {
+            "type": "array",
+            "items": { "type": "string" },
+            "default": [],
+            "description": "Non-agent members by channel-native ID. Use [\"*\"] for anyone."
+          }
+        },
+        "required": ["channel"],
+        "additionalProperties": false
+      }
     }
   },
   "additionalProperties": false

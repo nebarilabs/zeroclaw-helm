@@ -466,3 +466,17 @@ extraEnvFrom: []
 #       policyTypes:
 #         - Ingress
 extraManifests: []
+
+# ---------------------------------------------------------------------------
+# Peer Groups (V3 inbound sender gating)
+# Declares who an agent accepts inbound messages from on each channel.
+# An empty externalPeers list denies everyone; ["*"] accepts anyone.
+# ---------------------------------------------------------------------------
+peerGroups: {}
+# Example:
+#   discord-default:
+#     channel: "discord.default"
+#     agents:
+#       - default
+#     externalPeers:
+#       - "901840016030978078"

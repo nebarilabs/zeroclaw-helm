@@ -286,6 +286,19 @@ data:
     allowed_users = {{ include "zeroclaw.tomlStringList" .Values.config.channels.dingtalk.allowedUsers }}
     {{- end }}
 
+    # ── Peer Groups (V3 inbound sender gating) ──────────────
+    {{- range $name, $pg := .Values.peerGroups }}
+
+    [peer_groups.{{ $name }}]
+    channel = {{ $pg.channel | quote }}
+    {{- if $pg.agents }}
+    agents = {{ include "zeroclaw.tomlStringList" $pg.agents }}
+    {{- end }}
+    {{- if $pg.externalPeers }}
+    external_peers = {{ include "zeroclaw.tomlStringList" $pg.externalPeers }}
+    {{- end }}
+    {{- end }}
+
     {{- if .Values.config.extraConfig }}
 
     # ── Extra configuration ───────────────────────────────────
