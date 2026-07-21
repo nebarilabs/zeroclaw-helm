@@ -169,6 +169,7 @@ data:
     enabled = true
     risk_profile = "default"
     runtime_profile = "default"
+    channels = {{ include "zeroclaw.enabledChannels" . }}
 
     # ── Channels (V3 alias-wrapped) ───────────────────────────
     {{- if .Values.config.channels.telegram.enabled }}
