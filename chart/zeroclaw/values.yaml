@@ -237,6 +237,7 @@ config:
   providers:
     customOllama:
       uri: ""
+      model: ""
 
   # ── Agent ───────────────────────────────────────────────────
   agent:

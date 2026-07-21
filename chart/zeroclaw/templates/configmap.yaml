@@ -167,6 +167,9 @@ data:
     # ── Provider models (V3 named providers) ────────────────
     {{- if .Values.config.providers.customOllama.uri }}
     [providers.models.custom.ollama]
+    {{- if .Values.config.providers.customOllama.model }}
+    model = {{ .Values.config.providers.customOllama.model | quote }}
+    {{- end }}
     uri = {{ .Values.config.providers.customOllama.uri | quote }}
     {{- end }}
 
