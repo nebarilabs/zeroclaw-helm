@@ -233,6 +233,11 @@ config:
     runtimeTracePath: "state/runtime-trace.jsonl"
     runtimeTraceMaxEntries: 200
 
+  # ── Provider models (V3 named providers) ─────────────────────
+  providers:
+    customOllama:
+      uri: ""
+
   # ── Agent ───────────────────────────────────────────────────
   agent:
     compactContext: false

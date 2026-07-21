@@ -164,12 +164,21 @@ data:
     monthly_limit_usd = {{ .Values.config.cost.monthlyLimitUsd }}
     warn_at_percent = {{ .Values.config.cost.warnAtPercent }}
 
+    # ── Provider models (V3 named providers) ────────────────
+    {{- if .Values.config.providers.customOllama.uri }}
+    [providers.models.custom.ollama]
+    uri = {{ .Values.config.providers.customOllama.uri | quote }}
+    {{- end }}
+
     # ── Agent (default) ──────────────────────────────────────
     [agents.default]
     enabled = true
     risk_profile = "default"
     runtime_profile = "default"
     channels = {{ include "zeroclaw.enabledChannels" . }}
+    {{- if .Values.config.providers.customOllama.uri }}
+    model_provider = "custom.ollama"
+    {{- end }}
 
     # ── Channels (V3 alias-wrapped) ───────────────────────────
     {{- if .Values.config.channels.telegram.enabled }}
