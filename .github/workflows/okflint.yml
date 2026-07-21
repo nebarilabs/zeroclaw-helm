@@ -1,0 +1,17 @@
+name: OKF Lint
+on:
+  pull_request:
+    paths:
+      - 'okf/**/*.md'
+      - 'okf/okf-base.yaml'
+      - 'okf-base.yaml'
+      - 'index.md'
+      - 'domains/**/*.md'
+      - 'projects/**/*.md'
+      - 'patterns/**/*.md'
+      - 'agents/**/*.md'
+      - 'glossary.md'
+
+jobs:
+  lint:
+    uses: nebarilabs/.github/.github/workflows/okflint.yml@v1
