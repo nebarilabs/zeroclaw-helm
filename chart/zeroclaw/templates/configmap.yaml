@@ -184,6 +184,7 @@ data:
     {{- if .Values.config.channels.telegram.enabled }}
 
     [channels.telegram.default]
+    enabled = true
     bot_token = "__SECRET_TELEGRAM_BOT_TOKEN__"
     allowed_users = {{ include "zeroclaw.tomlStringList" .Values.config.channels.telegram.allowedUsers }}
     mention_only = {{ .Values.config.channels.telegram.mentionOnly }}
@@ -192,6 +193,7 @@ data:
     {{- if .Values.config.channels.discord.enabled }}
 
     [channels.discord.default]
+    enabled = true
     bot_token = "__SECRET_DISCORD_BOT_TOKEN__"
     {{- if .Values.config.channels.discord.guildId }}
     guild_id = {{ .Values.config.channels.discord.guildId | quote }}
@@ -203,6 +205,7 @@ data:
     {{- if .Values.config.channels.slack.enabled }}
 
     [channels.slack.default]
+    enabled = true
     bot_token = "__SECRET_SLACK_BOT_TOKEN__"
     {{- if .Values.config.channels.slack.channelId }}
     channel_id = {{ .Values.config.channels.slack.channelId | quote }}
@@ -213,6 +216,7 @@ data:
     {{- if .Values.config.channels.whatsapp.enabled }}
 
     [channels.whatsapp.default]
+    enabled = true
     access_token = "__SECRET_WHATSAPP_ACCESS_TOKEN__"
     phone_number_id = {{ .Values.config.channels.whatsapp.phoneNumberId | quote }}
     verify_token = "__SECRET_WHATSAPP_VERIFY_TOKEN__"
@@ -222,6 +226,7 @@ data:
     {{- if .Values.config.channels.matrix.enabled }}
 
     [channels.matrix.default]
+    enabled = true
     homeserver = {{ .Values.config.channels.matrix.homeserver | quote }}
     access_token = "__SECRET_MATRIX_ACCESS_TOKEN__"
     room_id = {{ .Values.config.channels.matrix.roomId | quote }}
@@ -231,12 +236,14 @@ data:
     {{- if .Values.config.channels.imessage.enabled }}
 
     [channels.imessage.default]
+    enabled = true
     allowed_contacts = {{ include "zeroclaw.tomlStringList" .Values.config.channels.imessage.allowedContacts }}
     {{- end }}
 
     {{- if .Values.config.channels.irc.enabled }}
 
     [channels.irc.default]
+    enabled = true
     server = {{ .Values.config.channels.irc.server | quote }}
     port = {{ .Values.config.channels.irc.port }}
     nickname = {{ .Values.config.channels.irc.nickname | quote }}
@@ -254,6 +261,7 @@ data:
     {{- if .Values.config.channels.lark.enabled }}
 
     [channels.lark.default]
+    enabled = true
     app_id = {{ .Values.config.channels.lark.appId | quote }}
     app_secret = "__SECRET_LARK_APP_SECRET__"
     {{- if .Values.config.channels.lark.encryptKey }}
@@ -269,6 +277,7 @@ data:
     {{- if .Values.config.channels.dingtalk.enabled }}
 
     [channels.dingtalk.default]
+    enabled = true
     client_id = {{ .Values.config.channels.dingtalk.clientId | quote }}
     client_secret = "__SECRET_DINGTALK_CLIENT_SECRET__"
     allowed_users = {{ include "zeroclaw.tomlStringList" .Values.config.channels.dingtalk.allowedUsers }}
