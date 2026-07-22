@@ -182,6 +182,9 @@ data:
     {{- if .Values.config.providers.customOllama.uri }}
     model_provider = "custom.ollama"
     {{- end }}
+    {{- if .Values.config.agent.skillBundles }}
+    skill_bundles = {{ include "zeroclaw.tomlStringList" .Values.config.agent.skillBundles }}
+    {{- end }}
 
     # ── Channels (V3 alias-wrapped) ───────────────────────────
     {{- if .Values.config.channels.telegram.enabled }}
@@ -189,7 +192,6 @@ data:
     [channels.telegram.default]
     enabled = true
     bot_token = "__SECRET_TELEGRAM_BOT_TOKEN__"
-    allowed_users = {{ include "zeroclaw.tomlStringList" .Values.config.channels.telegram.allowedUsers }}
     mention_only = {{ .Values.config.channels.telegram.mentionOnly }}
     {{- end }}
 
@@ -201,7 +203,6 @@ data:
     {{- if .Values.config.channels.discord.guildId }}
     guild_id = {{ .Values.config.channels.discord.guildId | quote }}
     {{- end }}
-    allowed_users = {{ include "zeroclaw.tomlStringList" .Values.config.channels.discord.allowedUsers }}
     listen_to_bots = {{ .Values.config.channels.discord.listenToBots }}
     {{- end }}
 
@@ -213,7 +214,6 @@ data:
     {{- if .Values.config.channels.slack.channelId }}
     channel_id = {{ .Values.config.channels.slack.channelId | quote }}
     {{- end }}
-    allowed_users = {{ include "zeroclaw.tomlStringList" .Values.config.channels.slack.allowedUsers }}
     {{- end }}
 
     {{- if .Values.config.channels.whatsapp.enabled }}
@@ -233,7 +233,6 @@ data:
     homeserver = {{ .Values.config.channels.matrix.homeserver | quote }}
     access_token = "__SECRET_MATRIX_ACCESS_TOKEN__"
     room_id = {{ .Values.config.channels.matrix.roomId | quote }}
-    allowed_users = {{ include "zeroclaw.tomlStringList" .Values.config.channels.matrix.allowedUsers }}
     {{- end }}
 
     {{- if .Values.config.channels.imessage.enabled }}
@@ -254,7 +253,6 @@ data:
     username = {{ .Values.config.channels.irc.username | quote }}
     {{- end }}
     channels = {{ include "zeroclaw.tomlStringList" .Values.config.channels.irc.channels }}
-    allowed_users = {{ include "zeroclaw.tomlStringList" .Values.config.channels.irc.allowedUsers }}
     server_password = "__SECRET_IRC_SERVER_PASSWORD__"
     nickserv_password = "__SECRET_IRC_NICKSERV_PASSWORD__"
     sasl_password = "__SECRET_IRC_SASL_PASSWORD__"
@@ -273,7 +271,6 @@ data:
     {{- if .Values.config.channels.lark.verificationToken }}
     verification_token = {{ .Values.config.channels.lark.verificationToken | quote }}
     {{- end }}
-    allowed_users = {{ include "zeroclaw.tomlStringList" .Values.config.channels.lark.allowedUsers }}
     use_feishu = {{ .Values.config.channels.lark.useFeishu }}
     {{- end }}
 
@@ -283,7 +280,6 @@ data:
     enabled = true
     client_id = {{ .Values.config.channels.dingtalk.clientId | quote }}
     client_secret = "__SECRET_DINGTALK_CLIENT_SECRET__"
-    allowed_users = {{ include "zeroclaw.tomlStringList" .Values.config.channels.dingtalk.allowedUsers }}
     {{- end }}
 
     # ── Peer Groups (V3 inbound sender gating) ──────────────

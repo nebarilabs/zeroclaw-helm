@@ -907,6 +907,11 @@
                   "type": "string",
                   "default": "",
                   "description": "Default model for this provider (e.g. 'llama3', 'mistral'). Required for channel supervisor."
+                },
+                "api_key": {
+                  "type": "string",
+                  "default": "",
+                  "description": "API key for the provider. Ollama does not require one; set to 'ollama' to suppress diagnostics."
                 }
               },
               "additionalProperties": false
@@ -944,6 +949,12 @@
               "type": "string",
               "default": "auto",
               "description": "Tool dispatch strategy."
+            },
+            "skillBundles": {
+              "type": "array",
+              "items": { "type": "string" },
+              "default": [],
+              "description": "Skill bundle aliases to load at runtime. Skills must be in <bundle>/<name>/SKILL.md under the shared skills directory."
             }
           },
           "additionalProperties": false

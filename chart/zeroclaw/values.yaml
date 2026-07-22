@@ -246,6 +246,7 @@ config:
     maxHistoryMessages: 50
     parallelTools: false
     toolDispatcher: auto
+    skillBundles: []
 
   # ── Reliability ─────────────────────────────────────────────
   reliability:
