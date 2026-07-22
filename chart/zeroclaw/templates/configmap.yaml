@@ -190,6 +190,7 @@ data:
     {{- range .Values.config.agent.skillBundles }}
 
     [skill_bundles.{{ . }}]
+    directory = "/zeroclaw-data/shared/skills/{{ . }}"
     {{- end }}
 
     # ── Channels (V3 alias-wrapped) ───────────────────────────
