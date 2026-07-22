@@ -186,6 +186,12 @@ data:
     skill_bundles = {{ include "zeroclaw.tomlStringList" .Values.config.agent.skillBundles }}
     {{- end }}
 
+    # ── Skill Bundles (V3) ──────────────────────────────────
+    {{- range .Values.config.agent.skillBundles }}
+
+    [skill_bundles.{{ . }}]
+    {{- end }}
+
     # ── Channels (V3 alias-wrapped) ───────────────────────────
     {{- if .Values.config.channels.telegram.enabled }}
 
