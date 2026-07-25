@@ -47,6 +47,22 @@ data:
     auto_hydrate = {{ .Values.config.memory.autoHydrate }}
 
     # ── Risk Profile (autonomy / security) ────────────────────
+    {{- if .Values.risk_profiles }}
+    {{- range $name, $rp := .Values.risk_profiles }}
+    [risk_profiles.{{ $name }}]
+    level = {{ $rp.level | default "supervised" | quote }}
+    workspace_only = {{ $rp.workspaceOnly | default true }}
+    allowed_commands = {{ include "zeroclaw.tomlStringList" ($rp.allowedCommands | default list) }}
+    {{- if $rp.forbiddenPaths }}
+    forbidden_paths = {{ include "zeroclaw.tomlStringList" $rp.forbiddenPaths }}
+    {{- end }}
+    require_approval_for_medium_risk = {{ $rp.requireApprovalForMediumRisk | default true }}
+    block_high_risk_commands = {{ $rp.blockHighRiskCommands | default true }}
+    {{- if $rp.autoApprove }}
+    auto_approve = {{ include "zeroclaw.tomlStringList" $rp.autoApprove }}
+    {{- end }}
+    {{- end }}
+    {{- else }}
     [risk_profiles.default]
     level = {{ .Values.config.autonomy.level | quote }}
     workspace_only = {{ .Values.config.autonomy.workspaceOnly }}
@@ -57,8 +73,22 @@ data:
     {{- if .Values.config.autonomy.autoApprove }}
     auto_approve = {{ include "zeroclaw.tomlStringList" .Values.config.autonomy.autoApprove }}
     {{- end }}
+    {{- end }}
 
     # ── Runtime Profile ───────────────────────────────────────
+    {{- if .Values.runtime_profiles }}
+    {{- range $name, $rp := .Values.runtime_profiles }}
+    [runtime_profiles.{{ $name }}]
+    agentic = true
+    max_tool_iterations = {{ $rp.maxToolIterations | default 10 }}
+    max_actions_per_hour = {{ $rp.maxActionsPerHour | default 20 }}
+    max_cost_per_day_cents = {{ $rp.maxCostPerDayCents | default 500 }}
+    max_history_messages = {{ $rp.maxHistoryMessages | default 50 }}
+    compact_context = {{ $rp.compactContext | default false }}
+    parallel_tools = {{ $rp.parallelTools | default false }}
+    tool_dispatcher = {{ $rp.toolDispatcher | default "auto" | quote }}
+    {{- end }}
+    {{- else }}
     [runtime_profiles.default]
     agentic = true
     max_tool_iterations = {{ .Values.config.agent.maxToolIterations }}
@@ -68,6 +98,7 @@ data:
     compact_context = {{ .Values.config.agent.compactContext }}
     parallel_tools = {{ .Values.config.agent.parallelTools }}
     tool_dispatcher = {{ .Values.config.agent.toolDispatcher | quote }}
+    {{- end }}
 
     # ── Runtime (sandbox) ─────────────────────────────────────
     [runtime]
@@ -177,6 +208,27 @@ data:
     {{- end }}
 
     # ── Agent (default) ──────────────────────────────────────
+    {{- if .Values.agents }}
+    {{- range $name, $agent := .Values.agents }}
+    [agents.{{ $name }}]
+    enabled = {{ $agent.enabled | default true }}
+    risk_profile = {{ $agent.risk_profile | default "default" | quote }}
+    runtime_profile = {{ $agent.runtime_profile | default "default" | quote }}
+    {{- if $agent.channels }}
+    channels = {{ include "zeroclaw.tomlStringList" $agent.channels }}
+    {{- else }}
+    channels = {{ include "zeroclaw.enabledChannels" $ }}
+    {{- end }}
+    {{- if $agent.model_provider }}
+    model_provider = {{ $agent.model_provider | quote }}
+    {{- else if $.Values.config.providers.customOllama.uri }}
+    model_provider = "custom.ollama"
+    {{- end }}
+    {{- if $agent.skill_bundles }}
+    skill_bundles = {{ include "zeroclaw.tomlStringList" $agent.skill_bundles }}
+    {{- end }}
+    {{- end }}
+    {{- else }}
     [agents.default]
     enabled = true
     risk_profile = "default"
@@ -187,6 +239,7 @@ data:
     {{- end }}
     {{- if .Values.config.agent.skillBundles }}
     skill_bundles = {{ include "zeroclaw.tomlStringList" .Values.config.agent.skillBundles }}
+    {{- end }}
     {{- end }}
 
     # ── Skill Bundles (V3) ──────────────────────────────────

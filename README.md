@@ -43,11 +43,61 @@ All configuration is done through Helm values. Key settings:
 
 | Value              | Default      | Description                                            |
 | ------------------ | ------------ | ------------------------------------------------------ |
-| `config.mode`      | `gateway`    | `gateway` (webhook only) or `daemon`                   |
+| `config.mode`      | `gateway`    | `gateway` (webhook only) or `daemon` (channels require daemon) |
 | `config.provider`  | `openrouter` | LLM provider                                           |
-| `config.model`     | `""`         | Model override (default: `claude-sonnet-4-5-20250929`) |
+| `config.model`     | `""`         | Model override                                         |
 | `secret.apiKey`    | `""`         | API key (creates a Kubernetes Secret)                  |
 | `persistence.size` | `10Gi`       | PVC size for `/zeroclaw-data`                          |
+| `service.targetPort` | `42617`    | Container port (gateway listens on this port)          |
+
+### V3 Named Providers
+
+Route LLM traffic through a custom OpenAI-compatible endpoint:
+
+```yaml
+config:
+  providers:
+    customOllama:
+      uri: "http://your-endpoint:80/v1/chat/completions"
+      model: "gemma4:26b"
+      api_key: "your-key"
+```
+
+This renders as `[providers.models.custom.ollama]` in config.toml.
+
+### Multi-Agent
+
+Define multiple agents with different risk profiles and skills:
+
+```yaml
+agents:
+  default:
+    enabled: true
+    channels: ["discord.default"]
+    model_provider: "custom.ollama"
+    risk_profile: "default"
+  ops:
+    enabled: true
+    model_provider: "custom.ollama"
+    risk_profile: "full"
+
+risk_profiles:
+  full:
+    level: full
+    workspace_only: false
+```
+
+### Peer Groups
+
+Route channels to specific agents with sender gating:
+
+```yaml
+peerGroups:
+  discord-default:
+    channel: "discord.default"
+    agents: [default, ops]
+    externalPeers: ["123456789"]
+```
 
 See the full values reference and examples in [`chart/zeroclaw/README.md`](chart/zeroclaw/README.md).
 

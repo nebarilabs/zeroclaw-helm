@@ -234,12 +234,70 @@ config:
     runtimeTraceMaxEntries: 200
 
   # ── Provider models (V3 named providers) ─────────────────────
+  # The configmap template renders this as [providers.models.custom.ollama].
+  # Use V2 flat keys (not V3 nested keys) — the template only supports this format.
   providers:
     customOllama:
       uri: ""
       model: ""
+      api_key: ""
 
-  # ── Agent ───────────────────────────────────────────────────
+# ── Multi-Agent (V3 named agents) ────────────────────────────
+# When defined, overrides the single default agent from config.agent.*.
+# Each key becomes [agents.<name>] in config.toml.
+agents: {}
+# Example:
+#   default:
+#     enabled: true
+#     channels: ["discord.default"]
+#     model_provider: "custom.ollama"
+#     risk_profile: "default"
+#     runtime_profile: "default"
+#     skill_bundles: [ops]
+#   ops:
+#     enabled: true
+#     channels: []
+#     model_provider: "custom.ollama"
+#     risk_profile: "full"
+#     runtime_profile: "compact"
+#     skill_bundles: [ops, git-helper]
+
+# ── Risk Profiles (V3 named profiles) ────────────────────────
+# When defined, overrides the single default from config.autonomy.*.
+risk_profiles: {}
+# Example:
+#   default:
+#     level: supervised
+#     workspace_only: true
+#     allowedCommands: [git, ls, cat, grep, find, echo, pwd]
+#     requireApprovalForMediumRisk: true
+#     blockHighRiskCommands: true
+#   full:
+#     level: full
+#     workspace_only: false
+#     allowedCommands: [git, ls, cat, grep, find, echo, pwd, kubectl, helm]
+#     requireApprovalForMediumRisk: false
+#     blockHighRiskCommands: false
+#     autoApprove: [file_read, file_write, git_operations, http_request]
+
+# ── Runtime Profiles (V3 named profiles) ─────────────────────
+# When defined, overrides the single default from config.agent.*.
+runtime_profiles: {}
+# Example:
+#   default:
+#     compactContext: false
+#     maxHistoryMessages: 50
+#     maxToolIterations: 10
+#     parallelTools: false
+#     toolDispatcher: auto
+#   compact:
+#     compactContext: true
+#     maxHistoryMessages: 25
+#     maxToolIterations: 100
+#     parallelTools: true
+#     toolDispatcher: auto
+
+  # ── Agent (single-agent fallback) ───────────────────────────
   agent:
     compactContext: false
     maxToolIterations: 10
