@@ -126,7 +126,8 @@ spec:
             - daemon
             {{- else }}
             - gateway
-            - --port
+            - start
+            - -p
             - {{ .Values.service.targetPort | quote }}
             - --host
             - "[::]"
