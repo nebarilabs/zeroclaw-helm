@@ -1,7 +1,7 @@
 # zeroclaw-helm
 
-[![Lint and Test Charts](https://github.com/niklasfrick/zeroclaw-helm/actions/workflows/ci.yaml/badge.svg)](https://github.com/niklasfrick/zeroclaw-helm/actions/workflows/ci.yaml)
-[![Release Charts](https://github.com/niklasfrick/zeroclaw-helm/actions/workflows/release.yaml/badge.svg)](https://github.com/niklasfrick/zeroclaw-helm/actions/workflows/release.yaml)
+[![Lint and Test Charts](https://github.com/nebarilabs/zeroclaw-helm/actions/workflows/ci.yaml/badge.svg)](https://github.com/nebarilabs/zeroclaw-helm/actions/workflows/ci.yaml)
+[![Release Charts](https://github.com/nebarilabs/zeroclaw-helm/actions/workflows/release.yaml/badge.svg)](https://github.com/nebarilabs/zeroclaw-helm/actions/workflows/release.yaml)
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/zeroclaw)](https://artifacthub.io/packages/search?repo=zeroclaw)
 
 Helm chart for deploying [ZeroClaw](https://github.com/zeroclaw-labs/zeroclaw) on Kubernetes.
@@ -32,6 +32,7 @@ helm install zeroclaw ./chart/zeroclaw --set secret.apiKey="sk-..."
 ## Features
 
 - **Gateway & Daemon modes** — run as a webhook-only server or a full autonomous runtime with channels (Telegram, Discord, etc.)
+- **Multi-agent** — define multiple agents with different risk profiles, runtime profiles, and skills
 - **Config-driven** — provider, model, pairing, and bind settings via `values.yaml`
 - **Persistent storage** — data volume at `/zeroclaw-data` backed by a PVC
 - **Ingress & Gateway API** — first-class support for both `Ingress` and `HTTPRoute`
@@ -76,15 +77,50 @@ agents:
     channels: ["discord.default"]
     model_provider: "custom.ollama"
     risk_profile: "default"
+    runtime_profile: "default"
+    skill_bundles: [ops]
   ops:
     enabled: true
     model_provider: "custom.ollama"
     risk_profile: "full"
+    runtime_profile: "compact"
+    skill_bundles: [ops, git-helper, system-info]
+```
 
+### Risk Profiles
+
+Control per-agent autonomy and command access:
+
+```yaml
 risk_profiles:
+  default:
+    level: supervised
+    workspace_only: true
+    allowedCommands: [git, ls, cat, grep, find, echo, pwd]
+    requireApprovalForMediumRisk: true
   full:
     level: full
     workspace_only: false
+    allowedCommands: [git, ls, cat, grep, find, echo, pwd, kubectl, helm]
+    requireApprovalForMediumRisk: false
+```
+
+### Runtime Profiles
+
+Control per-agent runtime behavior:
+
+```yaml
+runtime_profiles:
+  default:
+    compactContext: false
+    maxHistoryMessages: 50
+    maxToolIterations: 10
+    parallelTools: false
+  compact:
+    compactContext: true
+    maxHistoryMessages: 25
+    maxToolIterations: 100
+    parallelTools: true
 ```
 
 ### Peer Groups
@@ -97,6 +133,28 @@ peerGroups:
     channel: "discord.default"
     agents: [default, ops]
     externalPeers: ["123456789"]
+```
+
+### A2A Server
+
+Enable the Agent-to-Agent protocol server for multi-agent communication:
+
+```yaml
+extraConfig: |
+  [a2a]
+  enabled = true
+  public_base_url = "http://zeroclaw-zeroclaw.zeroclaw.svc.cluster.local:8000"
+```
+
+### MCP Bundles
+
+Connect to Model Context Protocol servers for knowledge access:
+
+```yaml
+extraConfig: |
+  [mcp_bundles.knowledge]
+  transport = "sse"
+  url = "http://knowledge.knowledge.svc.cluster.local:8080/mcp"
 ```
 
 See the full values reference and examples in [`chart/zeroclaw/README.md`](chart/zeroclaw/README.md).
