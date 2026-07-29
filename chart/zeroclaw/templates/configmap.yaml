@@ -51,13 +51,13 @@ data:
     {{- range $name, $rp := .Values.risk_profiles }}
     [risk_profiles.{{ $name }}]
     level = {{ $rp.level | default "supervised" | quote }}
-    workspace_only = {{ $rp.workspaceOnly | default true }}
+    workspace_only = {{ if hasKey $rp "workspaceOnly" }}{{ $rp.workspaceOnly }}{{ else }}true{{ end }}
     allowed_commands = {{ include "zeroclaw.tomlStringList" ($rp.allowedCommands | default list) }}
     {{- if $rp.forbiddenPaths }}
     forbidden_paths = {{ include "zeroclaw.tomlStringList" $rp.forbiddenPaths }}
     {{- end }}
-    require_approval_for_medium_risk = {{ $rp.requireApprovalForMediumRisk | default true }}
-    block_high_risk_commands = {{ $rp.blockHighRiskCommands | default true }}
+    require_approval_for_medium_risk = {{ if hasKey $rp "requireApprovalForMediumRisk" }}{{ $rp.requireApprovalForMediumRisk }}{{ else }}true{{ end }}
+    block_high_risk_commands = {{ if hasKey $rp "blockHighRiskCommands" }}{{ $rp.blockHighRiskCommands }}{{ else }}true{{ end }}
     {{- if $rp.autoApprove }}
     auto_approve = {{ include "zeroclaw.tomlStringList" $rp.autoApprove }}
     {{- end }}
