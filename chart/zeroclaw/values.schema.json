@@ -434,7 +434,7 @@
           "minimum": 0.0,
           "maximum": 1.0,
           "default": 0.7,
-          "description": "LLM temperature (0.0 – 1.0)."
+          "description": "LLM temperature (0.0 \u2013 1.0)."
         },
         "allowPublicBind": {
           "type": "boolean",
@@ -874,7 +874,7 @@
                 "full"
               ],
               "default": "none",
-              "description": "Runtime trace storage mode. Traces contain model output text — keep disabled on shared hosts."
+              "description": "Runtime trace storage mode. Traces contain model output text \u2014 keep disabled on shared hosts."
             },
             "runtimeTracePath": {
               "type": "string",
@@ -952,7 +952,9 @@
             },
             "skillBundles": {
               "type": "array",
-              "items": { "type": "string" },
+              "items": {
+                "type": "string"
+              },
               "default": [],
               "description": "Skill bundle aliases to load at runtime. Skills must be in <bundle>/<name>/SKILL.md under the shared skills directory."
             }
@@ -1350,6 +1352,130 @@
       },
       "additionalProperties": false
     },
+    "risk_profiles": {
+      "type": "object",
+      "description": "Risk profiles defining agent autonomy and security. Read by template at .Values.risk_profiles.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "readonly",
+              "supervised",
+              "full"
+            ],
+            "default": "supervised"
+          },
+          "workspaceOnly": {
+            "type": "boolean",
+            "default": true
+          },
+          "allowedCommands": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "forbiddenPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "requireApprovalForMediumRisk": {
+            "type": "boolean",
+            "default": true
+          },
+          "blockHighRiskCommands": {
+            "type": "boolean",
+            "default": true
+          },
+          "autoApprove": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "agents": {
+      "type": "object",
+      "description": "Agent definitions. Read by template at .Values.agents.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "default": true
+          },
+          "channels": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "model_provider": {
+            "type": "string"
+          },
+          "risk_profile": {
+            "type": "string",
+            "default": "default"
+          },
+          "runtime_profile": {
+            "type": "string",
+            "default": "default"
+          },
+          "skill_bundles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "runtime_profiles": {
+      "type": "object",
+      "description": "Runtime profiles for per-agent behavior. Read by template at .Values.runtime_profiles.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "compactContext": {
+            "type": "boolean",
+            "default": false
+          },
+          "maxHistoryMessages": {
+            "type": "integer",
+            "default": 50
+          },
+          "maxToolIterations": {
+            "type": "integer",
+            "default": 10
+          },
+          "maxActionsPerHour": {
+            "type": "integer",
+            "default": 20
+          },
+          "maxCostPerDayCents": {
+            "type": "integer",
+            "default": 500
+          },
+          "parallelTools": {
+            "type": "boolean",
+            "default": false
+          },
+          "toolDispatcher": {
+            "type": "string",
+            "default": "auto"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
     "secret": {
       "type": "object",
       "description": "LLM provider API key Secret configuration.",
@@ -1697,18 +1823,24 @@
           },
           "agents": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "default": [],
             "description": "Agent aliases that are members of this peer group."
           },
           "externalPeers": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "default": [],
             "description": "Non-agent members by channel-native ID. Use [\"*\"] for anyone."
           }
         },
-        "required": ["channel"],
+        "required": [
+          "channel"
+        ],
         "additionalProperties": false
       }
     }
