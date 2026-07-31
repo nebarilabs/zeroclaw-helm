@@ -205,6 +205,12 @@ data:
     {{- if .Values.config.providers.customOllama.api_key }}
     api_key = {{ .Values.config.providers.customOllama.api_key | quote }}
     {{- end }}
+    {{- if .Values.config.providers.customOllama.numCtx }}
+    num_ctx = {{ .Values.config.providers.customOllama.numCtx }}
+    {{- end }}
+    {{- if .Values.config.providers.customOllama.numPredict }}
+    num_predict = {{ .Values.config.providers.customOllama.numPredict }}
+    {{- end }}
     {{- end }}
 
     # ── Agent (default) ──────────────────────────────────────
