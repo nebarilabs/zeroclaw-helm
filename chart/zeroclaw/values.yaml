@@ -238,9 +238,21 @@ config:
   # Use V2 flat keys (not V3 nested keys) — the template only supports this format.
   providers:
     customOllama:
+      # Ollama-compatible API endpoint URI (required to enable the block).
       uri: ""
+      # Default model for this provider (required for channel supervisor).
       model: ""
+      # API key (Ollama needs none; set to "ollama" to suppress diagnostics).
       api_key: ""
+      # Optional Ollama tuning knobs — map to num_ctx / num_predict in
+      # [providers.models.custom.ollama]. Raise numCtx when large tool results
+      # (e.g. prometheus /targets returns ~400KB) push the per-agent session
+      # history past the zeroclaw framework default (OLLAMA_DEFAULT_NUM_CTX=8192,
+      # ~32KB). Symptoms of overflow: the model drops the tool-call protocol
+      # instructions and zeroclaw returns the canned "internal tool-call format
+      # error" fallback on every call after the first in a session.
+      # numCtx: 32768
+      # numPredict: 4096
 
   # ── Agent (single-agent fallback) ───────────────────────────
   agent:
