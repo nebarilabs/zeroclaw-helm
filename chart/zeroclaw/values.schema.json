@@ -912,6 +912,16 @@
                   "type": "string",
                   "default": "",
                   "description": "API key for the provider. Ollama does not require one; set to 'ollama' to suppress diagnostics."
+                },
+                "numCtx": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Override the Ollama num_ctx (context window, in tokens) sent on every /api/chat request. Maps to the num_ctx field in [providers.models.custom.ollama]. Omit to use zeroclaw's framework default (OLLAMA_DEFAULT_NUM_CTX). Raise this when large tool results (e.g. prometheus /targets) push the per-agent session history past the default context window and cause tool-call parse failures on subsequent turns."
+                },
+                "numPredict": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Override the Ollama num_predict (max output tokens) sent on every /api/chat request. Maps to the num_predict field in [providers.models.custom.ollama]. Omit to use zeroclaw's framework default (OLLAMA_DEFAULT_NUM_PREDICT)."
                 }
               },
               "additionalProperties": false
