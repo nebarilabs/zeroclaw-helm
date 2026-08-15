@@ -233,6 +233,9 @@ data:
     {{- if $agent.skill_bundles }}
     skill_bundles = {{ include "zeroclaw.tomlStringList" $agent.skill_bundles }}
     {{- end }}
+    {{- if $agent.mcp_bundles }}
+    mcp_bundles = {{ include "zeroclaw.tomlStringList" $agent.mcp_bundles }}
+    {{- end }}
     {{- end }}
     {{- else }}
     [agents.default]

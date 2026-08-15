@@ -385,6 +385,7 @@ agents: {}
 #     risk_profile: "full"
 #     runtime_profile: "compact"
 #     skill_bundles: [ops, git-helper]
+#     mcp_bundles: [knowledge]
 
 # ── Risk Profiles (V3 named profiles) ────────────────────────
 # When defined, overrides the single default from config.autonomy.*.
