@@ -244,15 +244,24 @@ config:
       model: ""
       # API key (Ollama needs none; set to "ollama" to suppress diagnostics).
       api_key: ""
-      # Optional Ollama tuning knobs — map to num_ctx / num_predict in
-      # [providers.models.custom.ollama]. Raise numCtx when large tool results
-      # (e.g. prometheus /targets returns ~400KB) push the per-agent session
-      # history past the zeroclaw framework default (OLLAMA_DEFAULT_NUM_CTX=8192,
-      # ~32KB). Symptoms of overflow: the model drops the tool-call protocol
-      # instructions and zeroclaw returns the canned "internal tool-call format
-      # error" fallback on every call after the first in a session.
-      # numCtx: 32768
-      # numPredict: 4096
+      # Ollama tuning knobs — map to num_ctx / num_predict in
+      # [providers.models.custom.ollama].
+      #
+      # numPredict (num_predict, max output tokens): must be large enough for the
+      # model to finish reasoning before producing content. The zeroclaw framework
+      # default (OLLAMA_DEFAULT_NUM_PREDICT) is too small for chain-of-thought /
+      # reasoning models (e.g. gemma4:26b-32k): the budget exhausts during the
+      # reasoning phase, emitting finish_reason:length with empty or degenerate
+      # (repeated) replies on every agent call. 8192 gives thinking + answer room.
+      #
+      # numCtx (num_ctx, context window): raised above the framework default
+      # (OLLAMA_DEFAULT_NUM_CTX=8192, ~32KB) because large tool results (e.g.
+      # prometheus queries return up to ~8KB each) push the per-agent session
+      # history past the default, dropping the tool-call protocol instructions and
+      # triggering the canned "internal tool-call format error" fallback after the
+      # first turn.
+      numCtx: 32768
+      numPredict: 8192
 
   # ── Agent (single-agent fallback) ───────────────────────────
   agent:
