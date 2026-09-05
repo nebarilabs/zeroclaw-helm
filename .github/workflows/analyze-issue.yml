@@ -8,3 +8,4 @@ jobs:
     uses: nebarilabs/.github/.github/workflows/opencode-issue.yml@v2
     with:
       issue-number: ${{ github.event.issue.number }}
+    secrets: inherit
