@@ -8,3 +8,4 @@ permissions:
 jobs:
   review:
     uses: nebarilabs/.github/.github/workflows/opencode-review.yml@v2
+    secrets: inherit
