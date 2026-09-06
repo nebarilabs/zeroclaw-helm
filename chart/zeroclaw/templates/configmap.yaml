@@ -61,6 +61,9 @@ data:
     {{- if $rp.autoApprove }}
     auto_approve = {{ include "zeroclaw.tomlStringList" $rp.autoApprove }}
     {{- end }}
+    {{- if and $rp.delegationPolicy $rp.delegationPolicy.mode }}
+    delegation_policy.mode = {{ $rp.delegationPolicy.mode | quote }}
+    {{- end }}
     {{- end }}
     {{- else }}
     [risk_profiles.default]
@@ -87,6 +90,9 @@ data:
     compact_context = {{ $rp.compactContext | default false }}
     parallel_tools = {{ $rp.parallelTools | default false }}
     tool_dispatcher = {{ $rp.toolDispatcher | default "auto" | quote }}
+    {{- if $rp.maxDelegationDepth }}
+    max_delegation_depth = {{ $rp.maxDelegationDepth }}
+    {{- end }}
     {{- end }}
     {{- else }}
     [runtime_profiles.default]
@@ -235,6 +241,12 @@ data:
     {{- end }}
     {{- if $agent.mcp_bundles }}
     mcp_bundles = {{ include "zeroclaw.tomlStringList" $agent.mcp_bundles }}
+    {{- end }}
+    {{- if hasKey $agent "delegateSameRiskProfile" }}
+    delegate_same_risk_profile = {{ $agent.delegateSameRiskProfile }}
+    {{- end }}
+    {{- if $agent.delegates }}
+    delegates = {{ include "zeroclaw.tomlStringList" $agent.delegates }}
     {{- end }}
     {{- end }}
     {{- else }}

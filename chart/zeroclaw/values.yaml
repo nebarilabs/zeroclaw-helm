@@ -395,6 +395,21 @@ agents: {}
 #     runtime_profile: "compact"
 #     skill_bundles: [ops, git-helper]
 #     mcp_bundles: [knowledge]
+#
+#   # Delegation knobs (rendered into [agents.<name>]):
+#   #   delegateSameRiskProfile (bool, default true): when false, restricts the
+#   #     caller's auto-reachable delegate targets to the explicit `delegates`
+#   #     roster (no implicit same-risk-profile peers).
+#   #   delegates (string[]): explicit delegate-target allowlist (bounded
+#   #     delegation — the delegated run shares the caller's budget). Requires
+#   #     the caller's risk profile to set delegationPolicy.mode = "allow".
+#   # Example:
+#   #   senior-sre:
+#   #     enabled: true
+#   #     risk_profile: "sre"
+#   #     runtime_profile: "sre-senior"
+#   #     delegateSameRiskProfile: false
+#   #     delegates: [junior-sre]
 
 # ── Risk Profiles (V3 named profiles) ────────────────────────
 # When defined, overrides the single default from config.autonomy.*.
@@ -413,6 +428,22 @@ risk_profiles: {}
 #     requireApprovalForMediumRisk: false
 #     blockHighRiskCommands: false
 #     autoApprove: [file_read, file_write, git_operations, http_request]
+#
+#   # Delegation knob (rendered into [risk_profiles.<name>]):
+#   #   delegationPolicy.mode: "forbidden" (default) | "allow"
+#   #     Controls whether agents bound to this profile may delegate. The
+#   #     refusal warning "caller delegation_policy forbids delegation" is
+#   #     emitted when a bounded call is made under mode "forbidden".
+#   # Example:
+#   #   sre:
+#   #     level: full
+#   #     workspace_only: false
+#   #     requireApprovalForMediumRisk: false
+#   #     blockHighRiskCommands: false
+#   #     allowedCommands: [git, ls, cat, grep, find, echo, pwd, kubectl, helm, flux]
+#   #     autoApprove: [file_read, file_write, git_operations, http_request]
+#   #     delegationPolicy:
+#   #       mode: "allow"
 
 # ── Runtime Profiles (V3 named profiles) ─────────────────────
 # When defined, overrides the single default from config.agent.*.
@@ -430,6 +461,7 @@ runtime_profiles: {}
 #     maxToolIterations: 100
 #     parallelTools: true
 #     toolDispatcher: auto
+#     maxDelegationDepth: 1   # optional: cap delegation chain depth (binary default 3)
 
 # ---------------------------------------------------------------------------
 # API Key Secret

@@ -1408,6 +1408,21 @@
             "items": {
               "type": "string"
             }
+          },
+          "delegationPolicy": {
+            "type": "object",
+            "description": "Controls whether agents bound to this risk profile may delegate to other agents. Rendered as [risk_profiles.<name>].delegation_policy.mode. Default (unset) is 'forbidden'.",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "forbidden",
+                  "allow"
+                ],
+                "default": "forbidden"
+              }
+            },
+            "additionalProperties": false
           }
         },
         "additionalProperties": false
@@ -1451,6 +1466,18 @@
             "items": {
               "type": "string"
             }
+          },
+          "delegateSameRiskProfile": {
+            "type": "boolean",
+            "description": "Rendered as [agents.<name>].delegate_same_risk_profile. When false, the agent's auto-reachable delegate targets are restricted to its explicit `delegates` roster (no implicit same-risk-profile peers). Default true.",
+            "default": true
+          },
+          "delegates": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Rendered as [agents.<name>].delegates. Explicit delegate-target allowlist for this agent (bounded delegation). String entries are bounded targets sharing the caller's budget. Requires the caller's risk profile to set delegationPolicy.mode = \"allow\"."
           }
         },
         "additionalProperties": false
@@ -1489,6 +1516,11 @@
           "toolDispatcher": {
             "type": "string",
             "default": "auto"
+          },
+          "maxDelegationDepth": {
+            "type": "integer",
+            "description": "Rendered as [runtime_profiles.<name>].max_delegation_depth. Maximum depth of delegation chains started under this runtime profile. Default in the binary is 3.",
+            "default": 3
           }
         },
         "additionalProperties": false
