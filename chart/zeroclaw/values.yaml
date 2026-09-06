@@ -262,6 +262,15 @@ config:
       # first turn.
       numCtx: 32768
       numPredict: 8192
+      #
+      # contextWindow (framework context_window, in tokens): tells zeroclaw how
+      # much context the profile actually has for its own token accounting /
+      # prompt truncation. Must match numCtx (the Ollama num_ctx VRAM allocation)
+      # exactly — if it's larger than num_ctx, zeroclaw thinks it has more room
+      # than Ollama provides and truncation happens mid-generation. The framework
+      # defaults to 32000 when unset (which emits a "no context_window set"
+      # diagnostics warning).
+      contextWindow: 32768
 
   # ── Agent (single-agent fallback) ───────────────────────────
   agent:

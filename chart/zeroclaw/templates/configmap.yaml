@@ -217,6 +217,9 @@ data:
     {{- if .Values.config.providers.customOllama.numPredict }}
     num_predict = {{ .Values.config.providers.customOllama.numPredict }}
     {{- end }}
+    {{- if .Values.config.providers.customOllama.contextWindow }}
+    context_window = {{ .Values.config.providers.customOllama.contextWindow }}
+    {{- end }}
     {{- end }}
 
     # ── Agent (default) ──────────────────────────────────────
