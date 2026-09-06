@@ -924,6 +924,12 @@
                   "minimum": 1,
                   "default": 8192,
                   "description": "Ollama num_predict (max output tokens). Maps to the num_predict field in [providers.models.custom.ollama]. Chart default 8192 so chain-of-thought / reasoning models (e.g. gemma4:26b-32k) can finish thinking before producing content; a smaller num_predict exhausts the budget on reasoning and yields finish_reason:length with empty or degenerate (repeated) replies."
+                },
+                "contextWindow": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "default": 32768,
+                  "description": "zeroclaw framework context_window (in tokens) for this provider profile. Maps to the context_window field in [providers.models.custom.ollama] and is used by zeroclaw for its own token accounting / prompt truncation. Must match numCtx (the Ollama num_ctx VRAM allocation): if larger than num_ctx, zeroclaw overestimates the available window and truncation happens mid-generation. When unset, zeroclaw falls back to 32000 and emits a 'no context_window set' diagnostics warning."
                 }
               },
               "additionalProperties": false
