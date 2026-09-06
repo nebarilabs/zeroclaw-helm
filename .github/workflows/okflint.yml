@@ -14,4 +14,4 @@ on:
 
 jobs:
   lint:
-    uses: nebarilabs/.github/.github/workflows/okflint.yml@v2.1
+    uses: nebarilabs/.github/.github/workflows/okflint.yml@v2
