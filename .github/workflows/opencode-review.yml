@@ -1,3 +1,6 @@
+# Centrally managed by nebarilabs/.github — do not edit in this repo.
+# The org sync (nebarilabs/.github .github/workflows/sync.yml) overwrites this
+# file directly; downstream edits are silently lost. Propose changes upstream.
 name: OpenCode PR Review
 on:
   pull_request:
