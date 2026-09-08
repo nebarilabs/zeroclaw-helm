@@ -3,6 +3,29 @@ entries:
   zeroclaw:
   - apiVersion: v2
     appVersion: v0.8.4
+    created: "2026-09-08T05:50:41.975918939Z"
+    description: Helm chart for deploying ZeroClaw on Kubernetes
+    digest: c0ad7bb91f7087352e9000e171072756958e35aa87a6af259ad1d1735b5babec
+    home: https://github.com/niklasfrick/zeroclaw-helm
+    icon: https://raw.githubusercontent.com/zeroclaw-labs/zeroclaw/main/zeroclaw.png
+    keywords:
+    - zeroclaw
+    - llm
+    - ai
+    - chatbot
+    maintainers:
+    - name: niklasfrick
+      url: https://github.com/niklasfrick
+    name: zeroclaw
+    sources:
+    - https://github.com/niklasfrick/zeroclaw-helm
+    - https://github.com/zeroclaw-labs/zeroclaw
+    type: application
+    urls:
+    - https://github.com/nebarilabs/zeroclaw-helm/releases/download/zeroclaw-0.12.8/zeroclaw-0.12.8.tgz
+    version: 0.12.8
+  - apiVersion: v2
+    appVersion: v0.8.4
     created: "2026-09-08T04:44:39.736975914Z"
     description: Helm chart for deploying ZeroClaw on Kubernetes
     digest: fa2a7c15f8619fa200eed9c691d617cd62cbca3fd06fa2f0377b58baf972527d
@@ -822,4 +845,4 @@ entries:
     urls:
     - https://github.com/niklasfrick/zeroclaw-helm/releases/download/zeroclaw-0.0.1/zeroclaw-0.0.1.tgz
     version: 0.0.1
-generated: "2026-09-08T04:44:39.737317014Z"
+generated: "2026-09-08T05:50:41.976330401Z"
