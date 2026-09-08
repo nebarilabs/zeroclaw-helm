@@ -86,17 +86,12 @@ jobs:
         if: steps.version.outputs.changed == 'true'
         run: helm lint chart/zeroclaw
 
-      - name: Run chart-releaser
-        if: steps.version.outputs.changed == 'true'
-        uses: helm/chart-releaser-action@v1
-        with:
-          charts_dir: chart
-          skip_existing: true
-          mark_as_latest: true
-          pages_branch: gh-pages
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-
+      # Commit+push the version bump BEFORE chart-releaser: chart-releaser tags
+      # whatever HEAD points at, and tagging the pre-bump commit made every
+      # release tag's tree carry the PREVIOUS Chart.yaml version (the tag
+      # zeroclaw-0.12.7 shipped with Chart.yaml: 0.12.6, which made tag-pinned
+      # Flux GitRepositories report the wrong chart version). The chore(release)
+      # push does not re-trigger this workflow (head-commit guard above).
       - name: Push Chart.yaml version update
         if: steps.version.outputs.changed == 'true'
         run: |
@@ -110,3 +105,14 @@ jobs:
             git commit -m "chore(release): v${VERSION}"
             git push
           fi
+
+      - name: Run chart-releaser
+        if: steps.version.outputs.changed == 'true'
+        uses: helm/chart-releaser-action@v1
+        with:
+          charts_dir: chart
+          skip_existing: true
+          mark_as_latest: true
+          pages_branch: gh-pages
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
