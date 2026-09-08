@@ -68,6 +68,37 @@ jobs:
             --set channelSecrets.create=true \
             --set channelSecrets.telegramBotToken=ci-test-token
 
+      - name: Run helm template (agent channel bindings)
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          cat > /tmp/agent-channels.yaml <<'EOF'
+          config:
+            mode: daemon
+            channels:
+              discord:
+                enabled: true
+                guildId: "1"
+          channelSecrets:
+            existingSecret: ci-channel-secrets
+          agents:
+            default:
+              channels: ["discord.default"]
+            worker-named:
+              channels: []
+            worker-unspecified: {}
+          EOF
+          out=$(helm template zeroclaw chart/zeroclaw -f /tmp/agent-channels.yaml \
+            | grep -E '^[[:space:]]*channels =' | sed 's/^[[:space:]]*//')
+          echo "$out"
+          # Explicit channels: [] must render as [] (no binding), not inherit
+          # enabled channels — zeroclaw routes each channel to a single owner
+          # (last-alphabetical binding wins), so inheritance would hijack it.
+          echo "$out" | grep -qxF 'channels = []' \
+            || { echo "FAIL: agents.worker-named must render channels = []"; exit 1; }
+          # Omitted channels keeps the legacy inherit-all-enabled behavior.
+          [ "$(echo "$out" | grep -cxF 'channels = ["discord.default"]')" -eq 2 ] \
+            || { echo "FAIL: default + worker-unspecified must inherit discord.default"; exit 1; }
+
       - name: Install kubeconform
         if: steps.list-changed.outputs.changed == 'true'
         run: |
