@@ -398,7 +398,10 @@ agents: {}
 #     skill_bundles: [ops]
 #   ops:
 #     enabled: true
-#     channels: []
+#     channels: []        # binds no channel (A2A/cron-only agent). NOTE: omitting
+#                         # `channels` entirely inherits ALL enabled channels — zeroclaw
+#                         # routes each channel to a single owner (last-alphabetical
+#                         # binding wins), so workers must set channels: [] explicitly.
 #     model_provider: "custom.ollama"
 #     risk_profile: "full"
 #     runtime_profile: "compact"

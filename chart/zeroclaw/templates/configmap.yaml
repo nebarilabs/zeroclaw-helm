@@ -229,7 +229,13 @@ data:
     enabled = {{ $agent.enabled | default true }}
     risk_profile = {{ $agent.risk_profile | default "default" | quote }}
     runtime_profile = {{ $agent.runtime_profile | default "default" | quote }}
-    {{- if $agent.channels }}
+    {{- /* hasKey, not truthiness: an explicit empty list must render
+         `channels = []` (agent binds no channel). Truthiness would treat
+         [] as unset and inherit every enabled channel, letting any agent
+         silently claim a channel — zeroclaw routes each channel alias to a
+         single owner (last-alphabetical binding wins), so an accidental
+         binding hijacks all inbound traffic on that channel. */}}
+    {{- if hasKey $agent "channels" }}
     channels = {{ include "zeroclaw.tomlStringList" $agent.channels }}
     {{- else }}
     channels = {{ include "zeroclaw.enabledChannels" $ }}
