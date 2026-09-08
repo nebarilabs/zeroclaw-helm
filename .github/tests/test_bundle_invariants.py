@@ -38,6 +38,17 @@ COUNT_CHECKED_DOCS = ["AGENTS.md", "README.md"]
 # Guards against okflint-config regressions of the @v1 fan-out kind.
 HARDCODED_COUNT_NOUNS = ["projects?", "repos?", "concepts?", "agents?", "domains?", "patterns?"]
 
+# <N> [up to 2 modifier words] <noun>. The gap is load-bearing: "13 specialized
+# AI agents" (atlas README/AGENTS + six bundle files) escaped an adjacency-only
+# regex while being the exact drift class the rule exists for. Measured against
+# the full synced fleet prose (2026-09-07): 0 false positives from the gap.
+COUNT_RE = re.compile(
+    r"(?<![\d-])\b(\d+)\s+(?:[A-Za-z][\w-]*\s+){0,2}?(?:"
+    + "|".join(HARDCODED_COUNT_NOUNS)
+    + r")\b",
+    re.IGNORECASE,
+)
+
 # Bundle-prose count guard: a `<N> <noun>` is legal only on a line pinned to a
 # re-derivation anchor (an ISO date or a sweep/swept reference), or when the
 # number is a roadmap phase label ("Phase 1 agent"), or in log.md (append-only
@@ -300,16 +311,12 @@ def test_flat_concept_files_have_no_generated_count_prose():
     bundle sizes that drift when a pointer is added."""
     require_bundle()
     offenders = []
-    count_re = re.compile(
-        r"(?<![\d-])\b(\d+)\s+(?:" + "|".join(HARDCODED_COUNT_NOUNS) + r")\b",
-        re.IGNORECASE,
-    )
     for name in COUNT_CHECKED_DOCS:
         doc = REPO_ROOT / name
         if not doc.exists():
             continue
         text = doc.read_text(encoding="utf-8")
-        for m in count_re.finditer(text):
+        for m in COUNT_RE.finditer(text):
             offenders.append((name, m.group(0)))
     assert not offenders, (
         f"hardcoded bundle counts in {COUNT_CHECKED_DOCS} (drift on next "
@@ -327,10 +334,6 @@ def test_bundle_prose_has_no_undated_hardcoded_counts():
     fleet was cited as '13 agents', '7 agents', '16 repos', '18 repos' and
     '31 repos' across bundles — all undated."""
     require_bundle()
-    count_re = re.compile(
-        r"(?<![\d-])\b(\d+)\s+(?:" + "|".join(HARDCODED_COUNT_NOUNS) + r")\b",
-        re.IGNORECASE,
-    )
     offenders = []
     for path in all_bundle_md():
         if path.name in COUNT_SKIP_BASENAMES:
@@ -339,7 +342,7 @@ def test_bundle_prose_has_no_undated_hardcoded_counts():
         for lineno, line in enumerate(
             path.read_text(encoding="utf-8", errors="replace").splitlines(), 1
         ):
-            for m in count_re.finditer(line):
+            for m in COUNT_RE.finditer(line):
                 if COUNT_ANCHOR_RE.search(line) or COUNT_PHASE_PREFIX_RE.search(
                     line[: m.start()]
                 ):
