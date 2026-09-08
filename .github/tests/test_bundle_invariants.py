@@ -38,6 +38,14 @@ COUNT_CHECKED_DOCS = ["AGENTS.md", "README.md"]
 # Guards against okflint-config regressions of the @v1 fan-out kind.
 HARDCODED_COUNT_NOUNS = ["projects?", "repos?", "concepts?", "agents?", "domains?", "patterns?"]
 
+# Bundle-prose count guard: a `<N> <noun>` is legal only on a line pinned to a
+# re-derivation anchor (an ISO date or a sweep/swept reference), or when the
+# number is a roadmap phase label ("Phase 1 agent"), or in log.md (append-only
+# history, already dated by its `## YYYY-MM-DD` section headings).
+COUNT_ANCHOR_RE = re.compile(r"\d{4}-\d{2}-\d{2}|\bsweep(?:s|ed|ing)?\b", re.IGNORECASE)
+COUNT_PHASE_PREFIX_RE = re.compile(r"\bphase\s+$", re.IGNORECASE)
+COUNT_SKIP_BASENAMES = {"log.md"}
+
 
 def frontmatter_block(text: str) -> str:
     if not text.startswith("---"):
@@ -306,6 +314,41 @@ def test_flat_concept_files_have_no_generated_count_prose():
     assert not offenders, (
         f"hardcoded bundle counts in {COUNT_CHECKED_DOCS} (drift on next "
         f"pointer added): {offenders}"
+    )
+
+
+def test_bundle_prose_has_no_undated_hardcoded_counts():
+    """'Counts are values' (AGENTS.md) extended from root landing docs into
+    the bundle itself: fleet sizes written in prose silently drift once a
+    pointer is added or the deployment scales. Legal only with a re-derivation
+    anchor on the same line (ISO date / sweep reference), as a roadmap phase
+    label, or in log.md (append-only history dated by section headings).
+    Found live drift during the 2026-09-07 runner migration review: the same
+    fleet was cited as '13 agents', '7 agents', '16 repos', '18 repos' and
+    '31 repos' across bundles — all undated."""
+    require_bundle()
+    count_re = re.compile(
+        r"(?<![\d-])\b(\d+)\s+(?:" + "|".join(HARDCODED_COUNT_NOUNS) + r")\b",
+        re.IGNORECASE,
+    )
+    offenders = []
+    for path in all_bundle_md():
+        if path.name in COUNT_SKIP_BASENAMES:
+            continue
+        rel = str(path.relative_to(REPO_ROOT))
+        for lineno, line in enumerate(
+            path.read_text(encoding="utf-8", errors="replace").splitlines(), 1
+        ):
+            for m in count_re.finditer(line):
+                if COUNT_ANCHOR_RE.search(line) or COUNT_PHASE_PREFIX_RE.search(
+                    line[: m.start()]
+                ):
+                    continue
+                offenders.append((rel, lineno, m.group(0)))
+    assert not offenders, (
+        "undated hardcoded counts in bundle prose — add a date/sweep anchor, "
+        "rephrase to 'every synced ...', or state it as a Phase label: "
+        f"{offenders}"
     )
 
 
