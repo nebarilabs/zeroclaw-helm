@@ -36,7 +36,14 @@ COUNT_CHECKED_DOCS = ["AGENTS.md", "README.md"]
 
 # Names of backstop invariants that must never silently stop running.
 # Guards against okflint-config regressions of the @v1 fan-out kind.
-HARDCODED_COUNT_NOUNS = ["projects?", "repos?", "concepts?", "agents?", "domains?", "patterns?"]
+HARDCODED_COUNT_NOUNS = [
+    "projects?",
+    "repos?",
+    "concepts?",
+    "agents?",
+    "domains?",
+    "patterns?",
+]
 
 # <N> [up to 2 modifier words] <noun>. The gap is load-bearing: "13 specialized
 # AI agents" (atlas README/AGENTS + six bundle files) escaped an adjacency-only
@@ -80,7 +87,8 @@ def parse_frontmatter(path: Path):
         if mark is not None:
             raise AssertionError(
                 f"{path}: invalid YAML in frontmatter (line {mark.line + 1}): "
-                f"{exc.problem}" + (
+                f"{exc.problem}"
+                + (
                     " — unquoted ':' in a scalar is the usual cause"
                     if "mapping values are not allowed" in (exc.problem or "")
                     else ""
@@ -150,6 +158,7 @@ def profile_types():
 
 # ------------------------------------------------------------- frontmatter
 
+
 def test_every_concept_file_has_frontmatter():
     require_bundle()
     missing = [str(p) for p in concept_files() if parse_frontmatter(p) is None]
@@ -177,7 +186,9 @@ def test_required_fields_per_type_match_okf_base(profile_types):
             value = fm.get(field)
             if value is None or (isinstance(value, str) and not value.strip()):
                 violations.append((str(p), typ, field))
-    assert not violations, f"missing required frontmatter (file, type, field): {violations}"
+    assert not violations, (
+        f"missing required frontmatter (file, type, field): {violations}"
+    )
 
 
 def test_bundle_root_index_only_carries_okf_version(profile_types):
@@ -239,7 +250,7 @@ def test_bundle_relative_md_links_resolve():
         # (/okf/concepts/x.md) link styles
         candidates = [OKF_DIR / rel]
         if rel.startswith("okf/"):
-            candidates.append(OKF_DIR / rel[len("okf/"):])
+            candidates.append(OKF_DIR / rel[len("okf/") :])
         if not any(c.exists() for c in candidates):
             broken.append((str(path), href))
     assert not broken, f"broken bundle-relative links: {broken}"
@@ -269,11 +280,14 @@ def test_no_relative_md_links_in_bundle():
 
 # -------------------------------------------- index <-> files (adaptive)
 
+
 def _subdir_pointers(subdir: Path):
     """Direct child dirs that represent pointers (skip _ prefixed templates)."""
     if not subdir.is_dir():
         return set()
-    return {p.name for p in subdir.iterdir() if p.is_dir() and not p.name.startswith("_")}
+    return {
+        p.name for p in subdir.iterdir() if p.is_dir() and not p.name.startswith("_")
+    }
 
 
 def _index_linked_names(index_file: Path, pattern: str):
@@ -283,11 +297,14 @@ def _index_linked_names(index_file: Path, pattern: str):
     return set(re.findall(pattern, text))
 
 
-@pytest.mark.parametrize("subdir,entry_re", [
-    ("projects", r"\(/(?:okf/)?projects/([^/]+)/overview\.md\)"),
-    # agents bundles may be index.md placeholders OR overview.md when populated
-    ("agents", r"\(/(?:okf/)?agents/([^/]+)/(?:index|overview)\.md\)"),
-])
+@pytest.mark.parametrize(
+    "subdir,entry_re",
+    [
+        ("projects", r"\(/(?:okf/)?projects/([^/]+)/overview\.md\)"),
+        # agents bundles may be index.md placeholders OR overview.md when populated
+        ("agents", r"\(/(?:okf/)?agents/([^/]+)/(?:index|overview)\.md\)"),
+    ],
+)
 def test_subdir_dirs_and_index_agree(subdir, entry_re):
     """Run only for subdirectories that exist in this repo's layout."""
     require_bundle()
@@ -381,13 +398,15 @@ def test_stale_after_is_plain_date_string():
 
 # --------------------------------------------------------------------- log
 
+
 def test_log_entries_use_greppable_date_headings():
     require_bundle()
     log_file = OKF_DIR / "log.md"
     if not log_file.exists():
         pytest.skip("no okf/log.md in this repo")
     bad = [
-        line for line in log_file.read_text(encoding="utf-8").splitlines()
+        line
+        for line in log_file.read_text(encoding="utf-8").splitlines()
         if line.startswith("## ") and not re.match(r"^## \d{4}-\d{2}-\d{2}$", line)
     ]
     assert not bad, f"log.md headings must be '## YYYY-MM-DD': {bad}"
