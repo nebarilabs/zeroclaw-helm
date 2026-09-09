@@ -4,11 +4,19 @@
 name: OpenCode PR Review
 on:
   pull_request:
-    types: [opened]
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: PR number to review (workflow_dispatch; ignored on pull_request events)
+        required: false
+        type: number
 permissions:
   pull-requests: write
   contents: read
 jobs:
   review:
     uses: nebarilabs/.github/.github/workflows/opencode-review.yml@v2
+    with:
+      pr_number: ${{ github.event.number || inputs.pr_number }}
     secrets: inherit
