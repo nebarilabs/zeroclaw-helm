@@ -7,7 +7,7 @@ on:
     types: [created]
 jobs:
   analyze:
-    if: contains(github.event.comment.body, '/opencode')
+    if: github.event.issue.pull_request == null && contains(github.event.comment.body, '/opencode')
     uses: nebarilabs/.github/.github/workflows/opencode-issue.yml@v2
     with:
       issue-number: ${{ github.event.issue.number }}
