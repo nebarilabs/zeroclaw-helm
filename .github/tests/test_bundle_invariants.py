@@ -81,7 +81,7 @@ def parse_frontmatter(path: Path):
             raise AssertionError(
                 f"{path}: invalid YAML in frontmatter (line {mark.line + 1}): "
                 f"{exc.problem}" + (
-                    f" — unquoted ':' in a scalar is the usual cause"
+                    " — unquoted ':' in a scalar is the usual cause"
                     if "mapping values are not allowed" in (exc.problem or "")
                     else ""
                 )
@@ -111,9 +111,7 @@ def concept_files():
     reserved = reserved_names()
     files = []
     for p in all_bundle_md():
-        if p.name not in reserved:
-            files.append(p)
-        elif _is_typed_pointer(p):
+        if p.name not in reserved or _is_typed_pointer(p):
             files.append(p)
     return files
 
