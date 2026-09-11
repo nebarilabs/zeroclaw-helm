@@ -36,6 +36,9 @@ COUNT_CHECKED_DOCS = ["AGENTS.md", "README.md"]
 
 # Names of backstop invariants that must never silently stop running.
 # Guards against okflint-config regressions of the @v1 fan-out kind.
+# nodes?/edges? were added 2026-09-09 (D1 in org-knowledge#45): graph-size
+# claims in prose ("44 nodes, 39 edges", "0 inbound edges") rot just like
+# fleet counts do — the glossary 44/39 instance was fixed as A4.
 HARDCODED_COUNT_NOUNS = [
     "projects?",
     "repos?",
@@ -43,6 +46,8 @@ HARDCODED_COUNT_NOUNS = [
     "agents?",
     "domains?",
     "patterns?",
+    "nodes?",
+    "edges?",
 ]
 
 # <N> [up to 2 modifier words] <noun>. The gap is load-bearing: "13 specialized
@@ -55,6 +60,17 @@ COUNT_RE = re.compile(
     + r")\b",
     re.IGNORECASE,
 )
+
+# Hyphenated fleet compounds: "13-agent ops platform" (dependencies diagram)
+# and "full 8-agent parity" escaped COUNT_RE because `\s+` demands a space.
+# Deliberately scoped to agents? — "NN-NAME" step/table labels (e.g. "02-REPO"
+# in WDS guides) are not active counts and must not trip. Same anchor/phase
+# exemptions as COUNT_RE (see COUNT_PATTERNS below). Caught live 2026-09-09:
+# org-knowledge okf/domains/dependencies.md:33 + k8s-apps atlas index:175.
+COUNT_HYPHEN_RE = re.compile(r"(?<![\d-])\b\d+-(?:agents?)\b", re.IGNORECASE)
+
+# Both count shapes share the anchor/phase/log exemptions in the tests below.
+COUNT_PATTERNS = (COUNT_RE, COUNT_HYPHEN_RE)
 
 # Bundle-prose count guard: a `<N> <noun>` is legal only on a line pinned to a
 # re-derivation anchor (an ISO date or a sweep/swept reference), or when the
@@ -87,9 +103,8 @@ def parse_frontmatter(path: Path):
         if mark is not None:
             raise AssertionError(
                 f"{path}: invalid YAML in frontmatter (line {mark.line + 1}): "
-                f"{exc.problem}"
-                + (
-                    " — unquoted ':' in a scalar is the usual cause"
+                f"{exc.problem}" + (
+                    f" — unquoted ':' in a scalar is the usual cause"
                     if "mapping values are not allowed" in (exc.problem or "")
                     else ""
                 )
@@ -119,7 +134,9 @@ def concept_files():
     reserved = reserved_names()
     files = []
     for p in all_bundle_md():
-        if p.name not in reserved or _is_typed_pointer(p):
+        if p.name not in reserved:
+            files.append(p)
+        elif _is_typed_pointer(p):
             files.append(p)
     return files
 
@@ -158,7 +175,6 @@ def profile_types():
 
 # ------------------------------------------------------------- frontmatter
 
-
 def test_every_concept_file_has_frontmatter():
     require_bundle()
     missing = [str(p) for p in concept_files() if parse_frontmatter(p) is None]
@@ -186,9 +202,7 @@ def test_required_fields_per_type_match_okf_base(profile_types):
             value = fm.get(field)
             if value is None or (isinstance(value, str) and not value.strip()):
                 violations.append((str(p), typ, field))
-    assert not violations, (
-        f"missing required frontmatter (file, type, field): {violations}"
-    )
+    assert not violations, f"missing required frontmatter (file, type, field): {violations}"
 
 
 def test_bundle_root_index_only_carries_okf_version(profile_types):
@@ -250,7 +264,7 @@ def test_bundle_relative_md_links_resolve():
         # (/okf/concepts/x.md) link styles
         candidates = [OKF_DIR / rel]
         if rel.startswith("okf/"):
-            candidates.append(OKF_DIR / rel[len("okf/") :])
+            candidates.append(OKF_DIR / rel[len("okf/"):])
         if not any(c.exists() for c in candidates):
             broken.append((str(path), href))
     assert not broken, f"broken bundle-relative links: {broken}"
@@ -280,14 +294,11 @@ def test_no_relative_md_links_in_bundle():
 
 # -------------------------------------------- index <-> files (adaptive)
 
-
 def _subdir_pointers(subdir: Path):
     """Direct child dirs that represent pointers (skip _ prefixed templates)."""
     if not subdir.is_dir():
         return set()
-    return {
-        p.name for p in subdir.iterdir() if p.is_dir() and not p.name.startswith("_")
-    }
+    return {p.name for p in subdir.iterdir() if p.is_dir() and not p.name.startswith("_")}
 
 
 def _index_linked_names(index_file: Path, pattern: str):
@@ -297,14 +308,11 @@ def _index_linked_names(index_file: Path, pattern: str):
     return set(re.findall(pattern, text))
 
 
-@pytest.mark.parametrize(
-    "subdir,entry_re",
-    [
-        ("projects", r"\(/(?:okf/)?projects/([^/]+)/overview\.md\)"),
-        # agents bundles may be index.md placeholders OR overview.md when populated
-        ("agents", r"\(/(?:okf/)?agents/([^/]+)/(?:index|overview)\.md\)"),
-    ],
-)
+@pytest.mark.parametrize("subdir,entry_re", [
+    ("projects", r"\(/(?:okf/)?projects/([^/]+)/overview\.md\)"),
+    # agents bundles may be index.md placeholders OR overview.md when populated
+    ("agents", r"\(/(?:okf/)?agents/([^/]+)/(?:index|overview)\.md\)"),
+])
 def test_subdir_dirs_and_index_agree(subdir, entry_re):
     """Run only for subdirectories that exist in this repo's layout."""
     require_bundle()
@@ -331,7 +339,9 @@ def test_flat_concept_files_have_no_generated_count_prose():
         if not doc.exists():
             continue
         text = doc.read_text(encoding="utf-8")
-        for m in COUNT_RE.finditer(text):
+        for m in (
+            m for rx in COUNT_PATTERNS for m in rx.finditer(text)
+        ):
             offenders.append((name, m.group(0)))
     assert not offenders, (
         f"hardcoded bundle counts in {COUNT_CHECKED_DOCS} (drift on next "
@@ -357,7 +367,11 @@ def test_bundle_prose_has_no_undated_hardcoded_counts():
         for lineno, line in enumerate(
             path.read_text(encoding="utf-8", errors="replace").splitlines(), 1
         ):
-            for m in COUNT_RE.finditer(line):
+            for m in (
+                mm
+                for rx in COUNT_PATTERNS
+                for mm in rx.finditer(line)
+            ):
                 if COUNT_ANCHOR_RE.search(line) or COUNT_PHASE_PREFIX_RE.search(
                     line[: m.start()]
                 ):
@@ -398,15 +412,13 @@ def test_stale_after_is_plain_date_string():
 
 # --------------------------------------------------------------------- log
 
-
 def test_log_entries_use_greppable_date_headings():
     require_bundle()
     log_file = OKF_DIR / "log.md"
     if not log_file.exists():
         pytest.skip("no okf/log.md in this repo")
     bad = [
-        line
-        for line in log_file.read_text(encoding="utf-8").splitlines()
+        line for line in log_file.read_text(encoding="utf-8").splitlines()
         if line.startswith("## ") and not re.match(r"^## \d{4}-\d{2}-\d{2}$", line)
     ]
     assert not bad, f"log.md headings must be '## YYYY-MM-DD': {bad}"
