@@ -104,7 +104,7 @@ def parse_frontmatter(path: Path):
             raise AssertionError(
                 f"{path}: invalid YAML in frontmatter (line {mark.line + 1}): "
                 f"{exc.problem}" + (
-                    f" — unquoted ':' in a scalar is the usual cause"
+                    " — unquoted ':' in a scalar is the usual cause"
                     if "mapping values are not allowed" in (exc.problem or "")
                     else ""
                 )
