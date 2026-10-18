@@ -1,0 +1,21 @@
+---
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "nebarilabs/admins"
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: "daily"
+    reviewers:
+      - "nebarilabs/admins"
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: "daily"
+    reviewers:
+      - "nebarilabs/admins"
