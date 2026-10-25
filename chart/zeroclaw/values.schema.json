@@ -671,6 +671,11 @@
               "default": "native",
               "description": "Execution runtime: 'native' or 'docker'."
             },
+            "shell": {
+              "type": "string",
+              "default": "sh",
+              "description": "Shell interpreter for the native runtime. Resolved through PATH or an absolute path."
+            },
             "docker": {
               "type": "object",
               "description": "Docker runtime settings (only used when kind=docker).",
@@ -771,6 +776,11 @@
               "type": "boolean",
               "default": false,
               "description": "Enable browser capabilities."
+            },
+            "automationEnabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enable the full browser automation tool."
             },
             "allowedDomains": {
               "type": "array",

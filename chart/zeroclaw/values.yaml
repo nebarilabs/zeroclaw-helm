@@ -176,6 +176,8 @@ config:
   runtime:
     # "native" or "docker"
     kind: native
+    # Shell used by the native runtime (must exist on PATH)
+    shell: sh
     docker:
       image: alpine:3.20
       network: none
@@ -202,6 +204,7 @@ config:
   # ── Browser ─────────────────────────────────────────────────
   browser:
     enabled: false
+    automationEnabled: false
     allowedDomains: []
     backend: agent_browser
     nativeHeadless: true
