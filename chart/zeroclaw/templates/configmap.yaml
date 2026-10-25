@@ -109,6 +109,9 @@ data:
     # ── Runtime (sandbox) ─────────────────────────────────────
     [runtime]
     kind = {{ .Values.config.runtime.kind | quote }}
+    {{- if .Values.config.runtime.shell }}
+    shell = {{ .Values.config.runtime.shell | quote }}
+    {{- end }}
 
     [runtime.docker]
     image = {{ .Values.config.runtime.docker.image | quote }}
@@ -139,6 +142,7 @@ data:
     # ── Browser ───────────────────────────────────────────────
     [browser]
     enabled = {{ .Values.config.browser.enabled }}
+    automation_enabled = {{ .Values.config.browser.automationEnabled }}
     {{- if .Values.config.browser.allowedDomains }}
     allowed_domains = {{ include "zeroclaw.tomlStringList" .Values.config.browser.allowedDomains }}
     {{- else }}

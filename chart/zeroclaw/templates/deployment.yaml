@@ -103,6 +103,7 @@ spec:
               {{- end }}
               {{- end }}
               chmod 600 /zeroclaw-data/.zeroclaw/config.toml
+              find /zeroclaw-data/.zeroclaw -type f \( -name '*.db*' -o -name '*.sqlite*' \) -exec chmod 600 {} \;
               chown -R 65534:65534 /zeroclaw-data
           volumeMounts:
             - name: data

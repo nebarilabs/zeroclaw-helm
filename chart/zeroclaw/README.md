@@ -91,6 +91,22 @@ helm uninstall zeroclaw
 | `config.autonomy.allowedCommands` | list   | `[git,npm,...]`    | Allowed shell commands           |
 | `config.autonomy.forbiddenPaths`  | list   | `[/etc,/root,...]` | Blocked filesystem paths         |
 
+### Runtime
+
+| Key                     | Type   | Default  | Description                                              |
+| ----------------------- | ------ | -------- | -------------------------------------------------------- |
+| `config.runtime.kind`   | string | `native` | `native` or `docker`                                     |
+| `config.runtime.shell`  | string | `sh`     | Shell interpreter for the native runtime                 |
+
+### Browser
+
+| Key                              | Type   | Default                | Description                              |
+| -------------------------------- | ------ | ---------------------- | ---------------------------------------- |
+| `config.browser.enabled`         | bool   | `false`                | Enable browser capabilities              |
+| `config.browser.automationEnabled` | bool | `false`                | Enable the full browser automation tool  |
+| `config.browser.allowedDomains`  | list   | `[]`                   | Allowed domains (`[]` means unrestricted) |
+| `config.browser.backend`         | string | `agent_browser`        | Browser backend implementation           |
+
 ### Skills
 
 | Key                        | Type | Default | Description                                                                        |
@@ -149,6 +165,8 @@ helm uninstall zeroclaw
 | `persistence.existingClaim` | string | `""`    | Use existing PVC                |
 | `persistence.size`          | string | `10Gi`  | PVC requested size              |
 | `persistence.storageClass`  | string | `""`    | StorageClass override           |
+
+The init container enforces `0600` on SQLite databases and their `-wal`/`-shm` files under `/zeroclaw-data/.zeroclaw`, as required by ZeroClaw v0.8.6+.
 
 ### Networking
 
