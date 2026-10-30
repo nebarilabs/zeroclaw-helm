@@ -243,6 +243,66 @@ def test_bundle_root_index_only_carries_okf_version(profile_types):
     )
 
 
+# -------------------------------------------------------- trust metadata
+
+# OKF v0.2 SPEC S7 actor convention: `<producer>/<version>` | `human:<id>` |
+# `process:<id>`. A bare name like `opencode` is outside the convention and
+# okflint only warns on it (S206), which is exactly how the fleet drifted
+# (org-knowledge#63) — so it must be hard-failed here.
+ACTOR_RE = re.compile(
+    r"^(?:[a-z0-9][a-z0-9._-]*/[A-Za-z0-9][A-Za-z0-9._-]*"
+    r"|(?:human|process):[a-z0-9][a-z0-9._-]*)$"
+)
+
+STATUS_ENUM = {"draft", "stable", "deprecated"}
+
+
+def _actor_of(value):
+    """`generated`/`verified` are flow mappings (`{ by: X, at: Y }`) or bare
+    actor strings; `verified` may also be a list of either."""
+    if isinstance(value, dict):
+        return value.get("by")
+    return value
+
+
+def test_generated_by_uses_actor_convention():
+    bad = []
+    for p in concept_files():
+        fm = parse_frontmatter(p)
+        actor = _actor_of(fm.get("generated"))
+        if actor is not None and not ACTOR_RE.fullmatch(str(actor)):
+            bad.append((str(p), str(actor)))
+    assert not bad, (
+        "generated.by outside SPEC S7 actor convention "
+        f"(<producer>/<version> | human:<id> | process:<id>): {bad}"
+    )
+
+
+def test_verified_by_uses_actor_convention():
+    bad = []
+    for p in concept_files():
+        fm = parse_frontmatter(p)
+        value = fm.get("verified")
+        if value is None:
+            continue
+        entries = value if isinstance(value, list) else [value]
+        for entry in entries:
+            actor = _actor_of(entry)
+            if actor is not None and not ACTOR_RE.fullmatch(str(actor)):
+                bad.append((str(p), str(actor)))
+    assert not bad, f"verified[].by outside SPEC S7 actor convention: {bad}"
+
+
+def test_status_within_enum():
+    bad = []
+    for p in concept_files():
+        fm = parse_frontmatter(p)
+        status = fm.get("status")
+        if status is not None and str(status) not in STATUS_ENUM:
+            bad.append((str(p), str(status)))
+    assert not bad, f"status outside draft|stable|deprecated: {bad}"
+
+
 # -------------------------------------------------------------- cross-links
 
 MD_LINK = re.compile(r"\]\(([^)\s]+)\)")
