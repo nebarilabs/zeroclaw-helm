@@ -7,6 +7,11 @@ updates:
       interval: "weekly"
     reviewers:
       - "nebarilabs/admins"
+    ignore:
+      # Private org repo - not reachable by Dependabot; caller workflows pin
+      # it as `uses: nebarilabs/.github/...@v2` and the moving v2 tag plus the
+      # org sync propagate updates without Dependabot
+      - dependency-name: "nebarilabs/.github"
   - package-ecosystem: pip
     directory: "/"
     schedule:
