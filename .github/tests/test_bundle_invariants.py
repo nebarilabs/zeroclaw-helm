@@ -135,9 +135,7 @@ def concept_files():
     reserved = reserved_names()
     files = []
     for p in all_bundle_md():
-        if p.name not in reserved:
-            files.append(p)
-        elif _is_typed_pointer(p):
+        if p.name not in reserved or _is_typed_pointer(p):
             files.append(p)
     return files
 
