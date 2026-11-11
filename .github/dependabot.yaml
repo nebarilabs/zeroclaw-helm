@@ -10,8 +10,15 @@ updates:
     ignore:
       # Private org repo - not reachable by Dependabot; caller workflows pin
       # it as `uses: nebarilabs/.github/...@v2` and the moving v2 tag plus the
-      # org sync propagate updates without Dependabot
+      # org sync propagate updates without Dependabot. TWO entries required:
+      # reusable-workflow deps are named by full path (`nebarilabs/.github/
+      # .github/workflows/...`) - a Nov 2025 behavior change (recorded in
+      # dependabot-core issue #11263, formalized in PR #13449) made the bare
+      # org/repo form stop matching them; bare-only ignores still failed
+      # weekly jobs fleet-wide on 2026-11-09 and 2026-11-11. Bare form kept
+      # for action-style refs.
       - dependency-name: "nebarilabs/.github"
+      - dependency-name: "nebarilabs/.github/*"
   - package-ecosystem: pip
     directory: "/"
     schedule:
