@@ -85,3 +85,13 @@ updates:
         update-types:
           - minor
           - patch
+    ignore:
+      # Interpreter base-image MAJORS are never actionable here: the proposed
+      # python:3.15-slim base broke wheel builds fleet-wide (graphify: "Failed
+      # building wheel for tree-sitter"; voice-bridge: "onnxruntime>=1.31.1
+      # ... from versions: none"), so Dependabot filing an interpreter major
+      # only ever produces a red PR. Those bumps go into the Dockerfile by hand
+      # once the code supports the new interpreter; minors (the 3.12.x class)
+      # still arrive through the group above.
+      - dependency-name: "python"
+        update-types: ["version-update:semver-major"]
