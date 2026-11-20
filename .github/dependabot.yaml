@@ -19,15 +19,69 @@ updates:
       # for action-style refs.
       - dependency-name: "nebarilabs/.github"
       - dependency-name: "nebarilabs/.github/*"
+    cooldown:
+      # Release-age gate: a version younger than this is never proposed. GitHub's own default
+      # is 3 days; majors wait longer because they can break APIs, patches wait so the
+      # 5.12.5-to-5.12.6 class of noise stops re-filing every day. Version updates only:
+      # security updates stay immediate.
+      default-days: 7
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 7
+    groups:
+      # One PR per repo for action pins instead of one per action: matches how we
+      # actually review them (as a set).
+      all-action-pins:
+        applies-to: version-updates
+        patterns:
+          - "*"
   - package-ecosystem: pip
     directory: "/"
     schedule:
       interval: "daily"
     reviewers:
       - "nebarilabs/admins"
+    cooldown:
+      # Release-age gate: a version younger than this is never proposed. GitHub's own default
+      # is 3 days; majors wait longer because they can break APIs, patches wait so the
+      # 5.12.5-to-5.12.6 class of noise stops re-filing every day. Version updates only:
+      # security updates stay immediate.
+      default-days: 7
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 7
+    groups:
+      # Minor/patch bumps land as one PR per repo; majors stay individual because
+      # they can carry breaking API changes that need real review.
+      minor-and-patch:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
   - package-ecosystem: docker
     directory: "/"
     schedule:
       interval: "daily"
     reviewers:
       - "nebarilabs/admins"
+    cooldown:
+      # Release-age gate: a version younger than this is never proposed. GitHub's own default
+      # is 3 days; majors wait longer because they can break APIs, patches wait so the
+      # 5.12.5-to-5.12.6 class of noise stops re-filing every day. Version updates only:
+      # security updates stay immediate.
+      default-days: 7
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 7
+    groups:
+      # Minor/patch bumps land as one PR per repo; majors (base images) stay
+      # individual because they change the runtime everyone runs on.
+      minor-and-patch:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
