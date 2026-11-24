@@ -19,22 +19,40 @@ updates:
       # for action-style refs.
       - dependency-name: "nebarilabs/.github"
       - dependency-name: "nebarilabs/.github/*"
+    # Dependabot's own default cap is 5 open version-update PRs per ecosystem; past
+    # it no PRs are opened and the error only surfaces on the repo's Dependabot tab
+    # ("Dependabot cannot open any more pull requests"). Raising the cap makes a
+    # healthy backlog distinguishable from a silent stop.
+    open-pull-requests-limit: 10
     cooldown:
       # Release-age gate: a version younger than this is never proposed. GitHub's own default
       # is 3 days; majors wait longer because they can break APIs, patches wait so the
       # 5.12.5-to-5.12.6 class of noise stops re-filing every day. Version updates only:
       # security updates stay immediate.
+      #
+      # Only default-days here. The options reference marks semver-major/minor/patch-days
+      # as "applies only to package managers supporting SemVer" - GitHub Actions and Docker
+      # are NOT among them, so those three keys are silently inert in this block. They live
+      # only under ecosystems that support SemVer (pip below); the sam5k guard now enforces
+      # that split instead of fossilizing inert keys across ~26 copies.
       default-days: 7
-      semver-major-days: 30
-      semver-minor-days: 7
-      semver-patch-days: 7
     groups:
       # One PR per repo for action pins instead of one per action: matches how we
       # actually review them (as a set).
+      #
+      # Flux helper-action pins are EXCLUDED from the aggregate on purpose: k8s-apps makes
+      # the kustomize version and the gotk component order load-bearing (CI pins kustomize
+      # 5.8.3; scripts/validate.sh enforces order), so those bumps need their own PR.
+      # exclude-patterns is the documented mechanism for "updates that need closer
+      # scrutiny". Names are Dependabot's tracked form (repo+full-path since the Nov 2025
+      # matcher change), hence the path prefix and trailing wildcard - a bare
+      # "fluxcd/pkg/actions" would not match.
       all-action-pins:
         applies-to: version-updates
         patterns:
           - "*"
+        exclude-patterns:
+          - "fluxcd/pkg/actions*"
   - package-ecosystem: pip
     directory: "/"
     schedule:
@@ -50,6 +68,9 @@ updates:
       semver-major-days: 30
       semver-minor-days: 7
       semver-patch-days: 7
+    # Same cap rationale as the github-actions block above: the default 5 makes a
+    # full backlog indistinguishable from Dependabot having stopped.
+    open-pull-requests-limit: 10
     groups:
       # Minor/patch bumps land as one PR per repo; majors stay individual because
       # they can carry breaking API changes that need real review.
@@ -72,9 +93,10 @@ updates:
       # 5.12.5-to-5.12.6 class of noise stops re-filing every day. Version updates only:
       # security updates stay immediate.
       default-days: 7
-      semver-major-days: 30
-      semver-minor-days: 7
-      semver-patch-days: 7
+      # No semver-* keys here either: the options reference lists Docker as SemVer-bump-days
+      # NOT supported, so those keys would be inert. Image tags are not SemVer anyway.
+    # Same cap rationale as the blocks above.
+    open-pull-requests-limit: 10
     groups:
       # Minor/patch bumps land as one PR per repo; majors (base images) stay
       # individual because they change the runtime everyone runs on.
