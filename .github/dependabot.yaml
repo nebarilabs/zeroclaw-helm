@@ -53,6 +53,13 @@ updates:
           - "*"
         exclude-patterns:
           - "fluxcd/pkg/actions*"
+          # cosign-installer pin is load-bearing for the supply chain: the reusable
+          # signing workflow pins v3.10.1 (installs cosign v2.6.1, native legacy
+          # .sig/.att tags). Bumping it moves cosign to v3/v4 whose default referrer
+          # bundles ECR accepts but serves ZERO of (#1061 discovery-format trap),
+          # and the gate demands both .sig AND .att. Auto-bumps here break signing
+          # silently — these bumps need deliberate review, not an aggregate PR.
+          - "sigstore/cosign-installer*"
   - package-ecosystem: pip
     directory: "/"
     schedule:
